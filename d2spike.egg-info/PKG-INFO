@@ -6,10 +6,6 @@ Home-page: https://github.com/williamedge/d2spike
 Author: William Edge
 Author-email: william.edge@uwa.edu.au
 License: BSD 3-clause
-Classifier: Development Status :: 2 - Improvement
-Classifier: Intended Audience :: Science/Research
-Classifier: License :: OSI Approved :: BSD 3-Clause License
-Classifier: Operating System :: POSIX :: All?
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.10
 License-File: LICENSE
