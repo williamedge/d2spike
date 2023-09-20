@@ -1,6 +1,10 @@
+LICENSE
+README.md
 setup.py
+d2spike/__init__.py
 d2spike/despike.py
 d2spike/despike_GN.py
+d2spike/full_stack.py
 d2spike/inspect.py
 d2spike/interp2.py
 d2spike/reinstate.py

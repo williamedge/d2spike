@@ -1,4 +1,6 @@
 numpy
+xarray
 matplotlib
 seaborn
 afloat
+wutils

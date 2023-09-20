@@ -2,6 +2,7 @@ Metadata-Version: 2.1
 Name: d2spike
 Version: 0.0.1
 Summary: A Python package for de-spiking velocity data.
+Home-page: https://github.com/williamedge/d2spike
 Author: William Edge
 Author-email: william.edge@uwa.edu.au
 License: BSD 3-clause
@@ -11,3 +12,4 @@ Classifier: License :: OSI Approved :: BSD 3-Clause License
 Classifier: Operating System :: POSIX :: All?
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.10
+License-File: LICENSE
