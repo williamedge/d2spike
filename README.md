@@ -7,3 +7,5 @@ The package is specifically intended for de-spiking data from acoustic profiler 
  - 2D Gaussian filtering to determine the mean (background) velocity. This is a fundamental and potentially difficult part of the method. Incorrect determination of the time series mean will violate the methods assumptions and cause erroneous spike detection.
  - 2D interpolation after the de-spiking algorithm. This is optional and may not be a good idea depending on the intended use of the data.
 
+Package is pip installable:
+`pip install d2spike`
