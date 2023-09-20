@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='d2spike',
-    version='0.0.1',    
+    version='0.0.2',    
     description='A Python package for de-spiking velocity data.',
     url='https://github.com/williamedge/d2spike',
     author='William Edge',
