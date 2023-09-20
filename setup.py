@@ -17,10 +17,6 @@ setup(
                       'wutils'],
 
     classifiers=[
-        'Development Status :: 2 - Improvement',
-        'Intended Audience :: Science/Research',
-        'License :: OSI Approved :: BSD 3-Clause License',  
-        'Operating System :: POSIX :: All?',        
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.10',
     ],
