@@ -13,8 +13,9 @@ setup(
                       'xarray',
                       'matplotlib',
                       'seaborn',
+                      'scipy',
                       'afloat',
-                      'wutils'],
+                      'wootils'],
 
     classifiers=[
         'Programming Language :: Python :: 3',
