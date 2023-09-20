@@ -7,6 +7,7 @@ from scipy.stats import norm
 from d2spike.utils import sec_since
 from d2spike.inspect import plot_reinstate
 
+# This module is not tested or implemented yet
 
 def reinstate_thresh(data, orig_data, thresh_ix):   
     idx = (thresh_ix.values) & np.isnan(data)    

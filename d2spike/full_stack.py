@@ -5,6 +5,7 @@ from d2spike.despike import DataArray
 
 def round_one(beam_data, orig_data, gf_sig, re_val, sw_vals, skip_pair, verbose, full_output, max_z, max_t):
 
+    raise ValueError('Function not implemented yet!!')
     # Use a 2D Gaussian filter to find the mean values (works much better than 1D lowpass with heavy spiking)
     # w_gf = xr.DataArray(data=nan_gauss(beam_data.values, gf_sig), coords=beam_data.coords)
     w_gf = beam_data.floatda.gaussian_filter(gf_sig)
@@ -34,6 +35,8 @@ def Full_Pipe(beam_data, corr_data, corrflag=45, qc0_val=0.5, gf_sig=[2,2], re1=
     Call the full de-spiking pipeline from raw data up to small gap interpolation.
     Large gap interpolation is handled later. 
     '''
+
+    raise ValueError('Function not implemented yet!!')
 
     # Flag data below a correlation threshold (and initiate the despike class)
     # w_c = flag_corr(beam_data, corr_data, corrflag).T
