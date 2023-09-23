@@ -16,3 +16,5 @@ To do:
  - test if calling a second class after `floatda` is actually necessary
     - if not, then make all functions capable of passing an xarray object
  - better class condition enforcement and error handling (not really done yet)
+ - docs
+ - notebook examples
