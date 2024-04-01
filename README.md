@@ -9,3 +9,12 @@ The package is specifically intended for de-spiking data from acoustic profiler 
 
 Package is pip installable:
 `pip install d2spike`
+
+To do:
+ - fix up GP reinstatement functions
+ - general code clean up
+ - test if calling a second class after `floatda` is actually necessary
+    - if not, then make all functions capable of passing an xarray object
+ - better class condition enforcement and error handling (not really done yet)
+ - docs
+ - notebook examples
