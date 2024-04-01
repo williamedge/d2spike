@@ -101,83 +101,90 @@ def despike_GN23(time, data, max_loops=1000, full_output=False, skip_pair=[-1],\
     # Initiale while loop until max loops or no new flags
     n_out  = 999
     n_lop = 0
-    while (n_out!=0) & (n_lop <= max_loops):
+    while (n_out!=0) & (n_lop <= max_loops) & (len(dt0[~np.isnan(dt0)]) > 1):
 
         # Remove any nans before calcs
         nanx = np.isnan(dt0)
         dt0 = dt0[~nanx]
         flg_loop = np.full(dt0.shape, False)
-
-        # Get derivatives
-        dt1 = uneven_time_derivative(time[~nanx], dt0)
-        dt2 = uneven_time_derivative(time[~nanx], dt1)
         
-        # Loop through each array and flag outliers
-        for ix,(dxx,dyy) in enumerate([[dt0,dt1],[dt1,dt2],[dt0,dt2]]):
+        # Dont do anything if all nans
+        if len(dt0) > 1:
+            # print(dt0)
 
-            # Skip a phase-space pair if chosen
-            if ix not in skip_pair:
+            # Get derivatives
+            dt1 = uneven_time_derivative(time[~nanx], dt0)
+            dt2 = uneven_time_derivative(time[~nanx], dt1)
+            
+            # Loop through each array and flag outliers
+            for ix,(dxx,dyy) in enumerate([[dt0,dt1],[dt1,dt2],[dt0,dt2]]):
 
-                # Check for rotation for the third pair
-                if ix==2:
-                    # Rotate before flag
-                    theta_u_u2 = pca_angle(dyy, dxx)
-                    dxx, dyy = rotate_2D(dxx, dyy, theta_u_u2)
+                # Skip a phase-space pair if chosen
+                if ix not in skip_pair:
+
+                    # Check for rotation for the third pair
+                    if ix==2:
+                        # Rotate before flag
+                        theta_u_u2 = pca_angle(dyy, dxx)
+                        dxx, dyy = rotate_2D(dxx, dyy, theta_u_u2)
+                        if full_output:
+                            output_full['theta_pair3'][n_lop] = theta_u_u2
+                        
+                    # Now calculate the point and ellipse distances
+                    pd = point_distance(dxx, dyy)
+                    if method == 'universal_thresh':
+                        sig_xx = np.std(dxx)
+                        sig_yy = np.std(dyy)
+                    elif method == 'mad':
+                        sig_xx = 1.483 * mad(dxx)
+                        sig_yy = 1.483 * mad(dyy)
+                    else:
+                        raise ValueError('Method unknown')
+                    ed = intense * ellipse_distance(dxx, dyy,\
+                                        universal_thresh(dxx, sig_xx),\
+                                        universal_thresh(dyy, sig_yy))
+
                     if full_output:
-                        output_full['theta_pair3'][n_lop] = theta_u_u2
+                        output_full['univ_criteria'][n_lop,ix,:] = [universal_thresh(dxx, sig_xx),\
+                                                                    universal_thresh(dyy, sig_yy)]
+                        # Record pair flagged (gets overwritten by higher pairs)
+                        pair_temp = output_full['flag_pair'][~nanx,n_lop]
+                        pair_temp[pd>ed] = ix+1
+                        output_full['flag_pair'][~nanx,n_lop] = pair_temp
+
+                    # Flag outliers
+                    flg_loop = flg_loop | (pd > ed)
                     
-                # Now calculate the point and ellipse distances
-                pd = point_distance(dxx, dyy)
-                if method == 'universal_thresh':
-                    sig_xx = np.std(dxx)
-                    sig_yy = np.std(dyy)
-                elif method == 'mad':
-                    sig_xx = 1.483 * mad(dxx)
-                    sig_yy = 1.483 * mad(dyy)
+            # Flag data and put back into full time series
+            dt0_new = np.full_like(data, np.nan)
+            # Few extra lines because you can't assign with a double slice
+            dt0_temp = dt0_new[~nanx]
+            dt0_temp[~flg_loop] = dt0[~flg_loop]
+            dt0_new[~nanx] = dt0_temp
+            dt0 = dt0_new
+            
+            if full_output:
+                output_full['looped_data'][:,n_lop+1] = dt0
+                output_full['intensity'][n_lop] = intense
+
+            # Detect a non-Gaussian finish point
+            if np.sum(flg_loop)==0:
+                # Run Shapiro-Wilks test
+                dt1, dt2 = calc_derivatives(time, dt0)
+                vars = [dt0, dt1, dt2]
+                if isinstance(sw_thresh, float):
+                    sw_result = [sw_normal_test(var[~np.isnan(var)],\
+                                                sw_thresh=sw_thresh, verbose=verbose)\
+                                for var in vars]
+                elif len(sw_thresh) == 3:
+                    sw_result = [sw_normal_test(var[~np.isnan(var)],\
+                                                sw_thresh=sw_t, verbose=verbose)\
+                                                for var, sw_t in zip(vars, sw_thresh)]
                 else:
-                    raise ValueError('Method unknown')
-                ed = intense * ellipse_distance(dxx, dyy,\
-                                    universal_thresh(dxx, sig_xx),\
-                                    universal_thresh(dyy, sig_yy))
+                    raise ValueError('Shaprio Wilks threshold value is bad.')
 
-                if full_output:
-                    output_full['univ_criteria'][n_lop,ix,:] = [universal_thresh(dxx, sig_xx),\
-                                                                universal_thresh(dyy, sig_yy)]
-                    # Record pair flagged (gets overwritten by higher pairs)
-                    pair_temp = output_full['flag_pair'][~nanx,n_lop]
-                    pair_temp[pd>ed] = ix+1
-                    output_full['flag_pair'][~nanx,n_lop] = pair_temp
-
-                # Flag outliers
-                flg_loop = flg_loop | (pd > ed)
-                
-        # Flag data and put back into full time series
-        dt0_new = np.full_like(data, np.nan)
-        # Few extra lines because you can't assign with a double slice
-        dt0_temp = dt0_new[~nanx]
-        dt0_temp[~flg_loop] = dt0[~flg_loop]
-        dt0_new[~nanx] = dt0_temp
-        dt0 = dt0_new
-        
-        if full_output:
-            output_full['looped_data'][:,n_lop+1] = dt0
-            output_full['intensity'][n_lop] = intense
-
-        # Detect a non-Gaussian finish point
-        if np.sum(flg_loop)==0:
-            # Run Shapiro-Wilks test
-            dt1, dt2 = calc_derivatives(time, dt0)
-            vars = [dt0, dt1, dt2]
-            if isinstance(sw_thresh, float):
-                sw_result = [sw_normal_test(var[~np.isnan(var)],\
-                                            sw_thresh=sw_thresh, verbose=verbose)\
-                            for var in vars]
-            elif len(sw_thresh) == 3:
-                sw_result = [sw_normal_test(var[~np.isnan(var)],\
-                                            sw_thresh=sw_t, verbose=verbose)\
-                                            for var, sw_t in zip(vars, sw_thresh)]
-            else:
-                raise ValueError('Shaprio Wilks threshold value is bad.')
+        else:
+            dt0 = np.full_like(data, np.nan)
 
         # Determine whether to exit loop
         if (np.sum(flg_loop)==0) & np.all(sw_result):

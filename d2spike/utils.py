@@ -7,9 +7,9 @@ def sec_since(time):
     return (time - time[0])/np.timedelta64(1,'s')
 
 
-def mad(data):
+def mad(data, axis=-1):
     # Median absolute deviation
-    median = np.nanmedian(data)
+    median = np.nanmedian(data, axis=axis)
     return np.nanmedian(np.abs(data - median))  
 
 
@@ -87,14 +87,18 @@ def flag_corr(w, c, corx):
     return w_c
 
 
-def nan_gauss(data, sigma):
+def nan_gauss(data, sigma, axis=None):
     V=data.copy()
     V[np.isnan(data)]=0
-    VV=gaussian_filter(V,sigma=sigma)
+    VV=gaussian_filter(V,sigma=sigma, axes=axis)
     W=0*data.copy()+1
     W[np.isnan(data)]=0
-    WW=gaussian_filter(W,sigma=sigma)
+    WW=gaussian_filter(W,sigma=sigma, axes=axis)
     return VV/WW
+
+def nan_gauss_xr(data_xr, sigma, axis=None):
+    data = nan_gauss(data_xr.values, sigma, axis=axis)
+    return xr.DataArray(data=data, coords=data_xr.coords)
 
 
 # def ellipse_threshold(x,y,n=100):

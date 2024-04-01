@@ -4,7 +4,7 @@ from afloat.pca import rotate_2D
 from matplotlib.lines import Line2D
 import seaborn as sns
 from matplotlib import cm as cmp
-from wutils.plotnice import vert_stack, basic_ts
+from wootils.plotnice import vert_stack, basic_ts
 
 from d2spike.utils import (calc_derivatives,\
                            sw_normal_test,\
