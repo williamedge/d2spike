@@ -181,7 +181,7 @@ def despike_GN23(time, data, max_loops=1000, full_output=False, skip_pair=[-1],\
                                                 sw_thresh=sw_t, verbose=verbose)\
                                                 for var, sw_t in zip(vars, sw_thresh)]
                 else:
-                    raise ValueError('Shaprio Wilks threshold value is bad.')
+                    raise ValueError('Shapiro Wilks threshold value is bad.')
 
         else:
             dt0 = np.full_like(data, np.nan)

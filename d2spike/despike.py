@@ -8,8 +8,38 @@ from d2spike.interp2 import full_2dinterp
 # from d2spike.full_stack import Full_Pipe
 
 
+# class daxrwrap():
+
+#     @property
+#     def _obj(self):
+#         """
+#         Little trick that may or may not work for xarray accessors.
+#         """
+#         return self.da
+
+#     @property
+#     def dims(self):
+#         return self.da.dims
+
+#     @property
+#     def other_dims(self):
+#         return [dim for dim in self.da.dims if (not dim.lower()=='time')]
+
+#     @property
+#     def coords(self):
+#         return self.da.coords
+
+#     def __repr__(self):
+#         return self.da.__repr__()
+
+#     @property
+#     def attrs(self):
+#         return self.da.attrs
+
+
+
 @xr.register_dataarray_accessor("floatda")
-class DataArray():
+class D2spikearray():
     def __init__(self, da):
         if 'units' in da.attrs:
             self.units = da.attrs['units']
@@ -19,53 +49,65 @@ class DataArray():
         if not dims[0].lower() == 'time':
             raise(Exception("First dimension must be time"))
         self._obj = da
+        # self.da = da
 
+    # @property
+    # def _obj(self):
+    #     """
+    #     Little trick that may or may not work for xarray accessors.
+    #     """
+    #     return self.da
+        
     @property
-    def _da(self):
+    def da(self):
         return self._obj
 
     @property
     def dims(self):
-        return self._obj.dims
+        return self.da.dims
 
     @property
     def other_dims(self):
-        return [dim for dim in self._obj.dims if (not dim.lower()=='time')]
+        return [dim for dim in self.da.dims if (not dim.lower()=='time')]
 
     @property
     def coords(self):
-        return self._obj.coords
+        return self.da.coords
 
     def __repr__(self):
-        return self._da.__repr__()
+        return self.da.__repr__()
 
     @property
     def _despike(self):
-        return Despike(self._da.time.values, self._da.values, units=self.units, other_dims=self.other_dims)
+        return Despike(self.da.time.values, self.da.values, units=self.units, other_dims=self.other_dims)
 
     def lowpass(self, T_cut_seconds, **kwargs):
         xr_result = xr.DataArray(self._despike.lowpass(T_cut_seconds, **kwargs),\
                                  coords=self.coords,\
                                  dims=self.dims)
         return xr_result
+
     
     def qc0_lowcorr(self, corr_data, corrflag, **kwargs):
         xr_result = xr.DataArray(self._despike.qc0_lowcorr(corr_data, corrflag, **kwargs),\
                                  coords=self.coords,\
                                  dims=self.dims)
-        return xr_result    
+        return xr_result
+
     
     def qc0_flags(self, **kwargs):
         xr_result = xr.DataArray(self._despike.qc0_flags(**kwargs),\
                                  coords=self.coords,\
                                  dims=self.dims)
-        return xr_result    
- 
+        return xr_result
+
+     
     def gaussian_filter(self, filter_var, **kwargs):
         xr_result = xr.DataArray(self._despike.gaussian_filter(filter_var, **kwargs),\
                                  coords=self.coords,\
                                  dims=self.dims)
         return xr_result
+
     
     def despike_gn23(self, **kwargs):
         result, fullout = self._despike.despike_gn23(**kwargs)
@@ -74,12 +116,14 @@ class DataArray():
                                  dims=self.dims)
         return xr_result, fullout
 
+
     def reinstate_threshold(self, orig_data, index, **kwargs):
         result = self._despike.reinstate_threshold(orig_data, index, **kwargs)
         xr_result = xr.DataArray(result,\
                                  coords=self.coords,\
                                  dims=self.dims)
         return xr_result
+
         
     def gp_reinstate_loop(self, **kwargs):
         result = self._despike.gp_reinstate_loop(**kwargs)
@@ -88,13 +132,15 @@ class DataArray():
                                  dims=self.dims)
         return xr_result
 
+
     def interp_2D(self, **kwargs):
         result = self._despike.interp_2D(**kwargs)
         xr_result = xr.DataArray(result,\
                                  coords=self.coords,\
                                  dims=self.dims)
         return xr_result
-           
+
+               
     def plot_uts(self, **kwargs):
         return self._despike.plot_uts(**kwargs)
     
@@ -125,6 +171,10 @@ class Despike():
         self.time = time
         self.data = data
         self.units = units
+
+    # @property
+    # def _obj(self):
+    #     return self.da
 
     def lowpass(self, T_cut_seconds, **kwargs):
         return quick_butter(self.time, self.data, T_cut_seconds, **kwargs)

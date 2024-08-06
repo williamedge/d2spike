@@ -1,5 +1,5 @@
 import numpy as np
-from d2spike.despike import DataArray
+# from d2spike.despike import DataArray
 
 
 

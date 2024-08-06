@@ -1,5 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
+d2spike/__pycache__
 *.py[cod]
 *$py.class
 

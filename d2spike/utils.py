@@ -15,7 +15,13 @@ def mad(data, axis=-1):
 
 def uneven_time_derivative(np_time, data, flagnans=True):
     # Calculate unevenly spaced time derivative using numpy gradient
-    t_seconds = (np_time - np_time[0])/np.timedelta64(1,'s')
+
+    # Check if time is a datetime64 object
+    if np.issubdtype(np_time.dtype, np.datetime64):
+        t_seconds = (np_time - np_time[0])/np.timedelta64(1,'s')
+    # Else check for float or int
+    elif np.issubdtype(np_time.dtype, np.float64) | np.issubdtype(np_time.dtype, np.int64):
+        t_seconds = np_time
     if flagnans:
         nanx = ~np.isnan(data)
         grad_data = np.full_like(data, np.nan)
@@ -106,9 +112,6 @@ def nan_gauss_xr(data_xr, sigma, axis=None):
 #     x_thresh = universal_thresh(x)
 #     y_thresh = universal_thresh(y)
 #     return x1*x_thresh, y1*y_thresh
-
-
-
 
 
 # def ks_normal_test(data, thresh=0.05):

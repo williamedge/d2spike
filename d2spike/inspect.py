@@ -11,7 +11,7 @@ from d2spike.utils import (calc_derivatives,\
                            sample_norm,\
                            ellipse_formula)
 
-def plot_Uts(time, dt0, index=True, ax=None, text=True):
+def plot_Uts(time, dt0, index=True, ax=None, text=True, bars=True):
     if index:
         xd = np.arange(len(time))
     else:
@@ -20,9 +20,10 @@ def plot_Uts(time, dt0, index=True, ax=None, text=True):
         fig, ax = plt.subplots(1, 1, figsize=(10,1.8))
     else:
         fig = None
-    for txx in xd[np.isnan(dt0)]:
-        ax.axvline(txx, ymin=0, ymax=0.1, c='lightgrey', lw=0.25)
-        ax.axvline(txx, ymin=0.9, ymax=1.0, c='lightgrey', lw=0.25)
+    if bars:
+        for txx in xd[np.isnan(dt0)]:
+            ax.axvline(txx, ymin=0, ymax=0.1, c='lightgrey', lw=0.25)
+            ax.axvline(txx, ymin=0.9, ymax=1.0, c='lightgrey', lw=0.25)
     ax.plot(xd, dt0, lw=0.75)
     ax.set_title('')
     ax.set_xlabel('')
