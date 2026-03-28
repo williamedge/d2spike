@@ -1,4 +1,5 @@
 import numpy as np
+import xarray as xr
 from afloat.pca import rotate_2D
 
 from d2spike.utils import (mad, uneven_time_derivative, pca_angle, point_distance,\
@@ -17,6 +18,8 @@ def qc0_Flags(data, thresh=10, val=None):
     thresh : float or int, optional
         A threshold flag as a multiplier of median absolute deviation (MAD)
         (default is 10).
+    val : float or int, optional
+        A threshold flag as a fixed value (default is None).
 
     Returns
     -------

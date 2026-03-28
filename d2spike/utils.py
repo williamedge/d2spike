@@ -10,7 +10,7 @@ def sec_since(time):
 def mad(data, axis=-1):
     # Median absolute deviation
     median = np.nanmedian(data, axis=axis)
-    return np.nanmedian(np.abs(data - median))  
+    return np.nanmedian(np.abs(data - median[:,np.newaxis]))  
 
 
 def uneven_time_derivative(np_time, data, flagnans=True):
